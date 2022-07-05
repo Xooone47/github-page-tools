@@ -1,0 +1,7 @@
+/node_modules
+/build
+.DS_Store
+/__coverage__
+
+yarn-error.log
+eslint-report.html
