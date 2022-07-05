@@ -41,7 +41,8 @@
     "scripts",
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "docs"
   ],
   "includes": ["./src/types/global.d.ts"]
 }

@@ -150,7 +150,7 @@ const prodConfigs = {
     output: {
         filename: 'js/[name].[contenthash].js',
         path: path.resolve(__dirname, 'build', 'static'),
-        publicPath: '/static/',
+        publicPath: '/github-page-tools/static/',
     },
 };
 

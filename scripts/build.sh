@@ -16,4 +16,9 @@ NODE_ENV=production NODE_OPTIONS=--max-old-space-size=4096 webpack --mode produc
 # cp -r static build/static/assets
 # cp -r public/* build
 
+rm -r docs
+mkdir docs
+
+cp -r build/* docs
+
 echo "Done: Build."

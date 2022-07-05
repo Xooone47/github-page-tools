@@ -1,0 +1,29 @@
+.src-components-Home-JiraGenerator__list--11FHe {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-start;
+}
+.src-components-Home-JiraGenerator__list--11FHe > * + * {
+  margin-left: 20px;
+}
+
+.src-components-App-styles__root--3pehO {
+  overflow: auto;
+}
+
+.src-components-Home-index__root--2bH25 {
+  font-size: 18px;
+}
+.src-components-Home-index__counter--2zwAN {
+  display: grid;
+  grid-template-columns: 100px 50px 50px;
+  grid-column-gap: 15px;
+  justify-items: center;
+  align-items: center;
+}
+
+body {
+  overflow: auto;
+}
+
