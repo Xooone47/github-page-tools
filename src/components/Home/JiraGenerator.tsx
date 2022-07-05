@@ -6,7 +6,7 @@ import {cloneDeep, partial} from 'lodash';
 import {produce} from 'immer';
 import styles from './JiraGenerator.less';
 
-// - [FE] / assignee:"wenwei.zhang@shopee.com" cfield:"Story Points:1"
+// - [FE] / assignee:"xx@qq.com" cfield:"Story Points:1"
 
 const templateRow = {
     summary: '',

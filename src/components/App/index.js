@@ -3,6 +3,7 @@ import {Provider} from 'react-redux';
 import {RecoilRoot} from 'recoil';
 import {store} from '@/store';
 import JiraGenerator from '@/components/Home/JiraGenerator';
+import {URL_PREFIX} from '@/constants';
 import {Home} from '..';
 import styles from './styles.less';
 
@@ -12,9 +13,9 @@ const App = () => (
             <BrowserRouter>
                 <div className={styles.root}>
                     <Switch>
-                        <Route path="/" exact component={Home} />
-                        <Route path="/jira-generator" exact component={JiraGenerator} />
-                        <Redirect from="*" to="/" />
+                        <Route path={URL_PREFIX} exact component={Home} />
+                        <Route path={`${URL_PREFIX}/jira-generator`} exact component={JiraGenerator} />
+                        <Redirect from="*" to={URL_PREFIX} />
                     </Switch>
                 </div>
             </BrowserRouter>
