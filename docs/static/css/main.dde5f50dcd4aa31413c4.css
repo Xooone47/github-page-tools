@@ -7,9 +7,8 @@
 .src-components-Home-JiraGenerator__list--11FHe > * + * {
   margin-left: 20px;
 }
-
-.src-components-App-styles__root--3pehO {
-  overflow: auto;
+.src-components-Home-JiraGenerator__result-item--_lt3Z pre {
+  margin: 0;
 }
 
 .src-components-Home-index__root--2bH25 {
