@@ -33,7 +33,7 @@ const RecoilDemo = () => {
         e => {
             setFilter(e.target.value);
         },
-        []
+        [setFilter]
     );
 
     return (

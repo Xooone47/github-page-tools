@@ -1,9 +1,10 @@
-import {Input, InputNumber, Button, List, Divider} from 'antd';
+import {Input, InputNumber, Button, List, Divider, message} from 'antd';
 import {useCallback, useState} from 'react';
 import {cloneDeep, partial} from 'lodash';
 // why unresolved
 // eslint-disable-next-line import/no-unresolved
 import {produce} from 'immer';
+import copy from 'copy-to-clipboard';
 import styles from './JiraGenerator.less';
 
 // - [FE] / assignee:"xx@qq.com" cfield:"Story Points:1"
@@ -30,13 +31,32 @@ const JiraGenerator = () => {
 
     const handleRowChange = useCallback(
         (index: number, key: string, value: string | number) => {
-            const result = produce(list, draft => {
+            const newList = produce(list, draft => {
                 const target = draft[index];
                 target[key] = value;
             });
-            setList(result);
+            setList(newList);
         },
         [list]
+    );
+
+    const handleDelete = useCallback(
+        (index: number) => {
+            const newList = produce(list, draft => {
+                draft.splice(index, 1);
+            });
+            setList(newList);
+        },
+        [list]
+    );
+
+    const handleCopy = useCallback(
+        index => {
+            const target = result[index];
+            copy(target);
+            message.success('Copied');
+        },
+        [result]
     );
 
     const handleInputEvent = useCallback(
@@ -58,7 +78,7 @@ const JiraGenerator = () => {
     );
 
     return (
-        <div>
+        <div style={{padding: 20}}>
             <Divider orientation="left">Jira Generator</Divider>
             <List
                 dataSource={list}
@@ -70,7 +90,7 @@ const JiraGenerator = () => {
                             className={styles.list}
                         >
                             <div>
-                                Summary:
+                                {'Summary:'}
                                 <Input
                                     value={item.summary}
                                     onChange={partial(handleInputEvent, index, 'summary')}
@@ -78,13 +98,13 @@ const JiraGenerator = () => {
                                 />
                             </div>
                             <div>
-                                Assignee:
+                                {'Assignee:'}
                                 <Input
                                     value={item.assignee}
                                     onChange={partial(handleInputEvent, index, 'assignee')}
                                     style={{display: 'inline-block', width: '200px'}}
                                 />
-                                @shopee.com
+                                {'@shopee.com'}
                             </div>
                             <div>
                                 {'Story Points:'}
@@ -94,6 +114,15 @@ const JiraGenerator = () => {
                                     style={{display: 'inline-block', width: '80px'}}
                                     step={0.5}
                                 />
+                            </div>
+                            <div>
+                                <Button
+                                    danger
+                                    type="link"
+                                    onClick={partial(handleDelete, index)}
+                                >
+                                    Delete
+                                </Button>
                             </div>
                         </List.Item>
                     );
@@ -108,8 +137,13 @@ const JiraGenerator = () => {
                     dataSource={result}
                     // eslint-disable-next-line react/jsx-no-bind
                     renderItem={(item, index) => (
-                        <List.Item key={index}>
+                        <List.Item
+                            key={index}
+                            style={{justifyContent: 'flex-start'}}
+                            className={styles['result-item']}
+                        >
                             <pre>{item}</pre>
+                            <Button style={{marginLeft: 30}} onClick={partial(handleCopy, index)}>Copy</Button>
                         </List.Item>
                     )}
                 />

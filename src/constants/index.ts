@@ -1,1 +1,1 @@
-export const URL_PREFIX = '/github-page-tools';
+export const URL_PREFIX = '/github-page-tools/';

@@ -8,7 +8,7 @@ module.exports = {
             'jsx': true,
         },
     },
-    plugins: ['react', 'import', '@typescript-eslint'],
+    plugins: ['react', 'import', '@typescript-eslint', 'react-hooks'],
     env: {
         'browser': true,
         'node': true,
@@ -42,6 +42,10 @@ module.exports = {
             {'groups': ['builtin', 'object', 'external', 'internal', 'parent', 'index', 'sibling']},
         ],
         'import/no-unresolved': 2,
+
+        // react hook rules
+        'react-hooks/rules-of-hooks': 2,
+        'react-hooks/exhaustive-deps': 2,
 
         // ECMAScript rules
         'accessor-pairs': 'warn',
