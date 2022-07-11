@@ -68,6 +68,12 @@ const JiraGenerator = () => {
 
     const handleGenerateClick = useCallback(
         () => {
+            const isValid = list.every(item => (item.summary && item.assignee && item.storyPoint));
+            if (!isValid) {
+                message.error('Summary/Assignee/StoryPoints is required');
+                return;
+            }
+
             const str = list.map(item => (
                 // eslint-disable-next-line max-len
                 `- [FE]${item.summary} / assignee:"${item.assignee}@shopee.com" cfield:"Story Points:${item.storyPoint}"`
