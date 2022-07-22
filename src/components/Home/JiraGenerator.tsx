@@ -1,4 +1,4 @@
-import {Input, InputNumber, Button, List, Divider, message} from 'antd';
+import {Input, InputNumber, Button, List, Divider, message, Checkbox} from 'antd';
 import {useCallback, useState} from 'react';
 import {cloneDeep, partial} from 'lodash';
 // why unresolved
@@ -11,6 +11,7 @@ import styles from './JiraGenerator.less';
 
 const templateRow = {
     summary: '',
+    useFePrefix: true,
     assignee: '',
     storyPoint: 1,
 };
@@ -66,6 +67,13 @@ const JiraGenerator = () => {
         [handleRowChange]
     );
 
+    const handleCheckboxChange = useCallback(
+        (index: number, key: string, e) => {
+            handleRowChange(index, key, e.target.checked);
+        },
+        [handleRowChange]
+    );
+
     const handleGenerateClick = useCallback(
         () => {
             const isValid = list.every(item => (item.summary && item.assignee && item.storyPoint));
@@ -76,7 +84,7 @@ const JiraGenerator = () => {
 
             const str = list.map(item => (
                 // eslint-disable-next-line max-len
-                `- [FE]${item.summary} / assignee:"${item.assignee}@shopee.com" cfield:"Story Points:${item.storyPoint}"`
+                `- ${item.useFePrefix ? '[FE]' : ''}${item.summary} / assignee:"${item.assignee}@shopee.com" cfield:"Story Points:${item.storyPoint}"`
             )).join('\n');
             setResult(prev => [str, ...prev]);
         },
@@ -96,7 +104,13 @@ const JiraGenerator = () => {
                             className={styles.list}
                         >
                             <div>
-                                {'Summary:'}
+                                {'Summary: '}
+                                <Checkbox
+                                    checked={item.useFePrefix}
+                                    onChange={partial(handleCheckboxChange, index, 'useFePrefix')}
+                                >
+                                    {'[FE]'}
+                                </Checkbox>
                                 <Input
                                     value={item.summary}
                                     onChange={partial(handleInputEvent, index, 'summary')}
