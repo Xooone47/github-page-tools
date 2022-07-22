@@ -1,5 +1,5 @@
 import {Input, InputNumber, Button, List, Divider, message, Checkbox} from 'antd';
-import {useCallback, useState} from 'react';
+import {useCallback, useState, useMemo} from 'react';
 import {cloneDeep, partial} from 'lodash';
 // why unresolved
 // eslint-disable-next-line import/no-unresolved
@@ -20,7 +20,6 @@ type Row = typeof templateRow;
 
 const JiraGenerator = () => {
     const [list, setList] = useState<Row[]>([cloneDeep(templateRow)]);
-    const [result, setResult] = useState<string[]>([]);
 
 
     const handleAdd = useCallback(
@@ -52,12 +51,17 @@ const JiraGenerator = () => {
     );
 
     const handleCopy = useCallback(
-        index => {
-            const target = result[index];
-            copy(target);
+        resultStr => {
+            const isValid = list.every(item => (item.summary && item.assignee && item.storyPoint));
+            if (!isValid) {
+                message.error('Summary/Assignee/StoryPoints is required');
+                return;
+            }
+
+            copy(resultStr);
             message.success('Copied');
         },
-        [result]
+        [list]
     );
 
     const handleInputEvent = useCallback(
@@ -74,19 +78,13 @@ const JiraGenerator = () => {
         [handleRowChange]
     );
 
-    const handleGenerateClick = useCallback(
+    const resultStr = useMemo(
         () => {
-            const isValid = list.every(item => (item.summary && item.assignee && item.storyPoint));
-            if (!isValid) {
-                message.error('Summary/Assignee/StoryPoints is required');
-                return;
-            }
-
             const str = list.map(item => (
                 // eslint-disable-next-line max-len
                 `- ${item.useFePrefix ? '[FE]' : ''}${item.summary} / assignee:"${item.assignee}@shopee.com" cfield:"Story Points:${item.storyPoint}"`
             )).join('\n');
-            setResult(prev => [str, ...prev]);
+            return str;
         },
         [list]
     );
@@ -149,24 +147,11 @@ const JiraGenerator = () => {
                 }}
             />
             <Button type="primary" onClick={handleAdd}>Add</Button>
-            <Button type="primary" onClick={handleGenerateClick} style={{marginLeft: 20}}>Generate</Button>
 
             <div style={{marginTop: 50, padding: 20}}>
                 <h2>Result:</h2>
-                <List
-                    dataSource={result}
-                    // eslint-disable-next-line react/jsx-no-bind
-                    renderItem={(item, index) => (
-                        <List.Item
-                            key={index}
-                            style={{justifyContent: 'flex-start'}}
-                            className={styles['result-item']}
-                        >
-                            <pre>{item}</pre>
-                            <Button style={{marginLeft: 30}} onClick={partial(handleCopy, index)}>Copy</Button>
-                        </List.Item>
-                    )}
-                />
+                <pre>{resultStr}</pre>
+                <Button style={{marginLeft: 30}} onClick={partial(handleCopy, resultStr)} type="primary">Copy</Button>
             </div>
         </div>
     );
