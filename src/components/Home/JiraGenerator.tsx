@@ -105,7 +105,7 @@ const JiraGenerator = () => {
                 return;
             }
 
-            setSnapshots(prev => [...prev, resultStr]);
+            setSnapshots(prev => [resultStr, ...prev]);
         },
         [resultStr, validateCurrentList]
     );
@@ -178,7 +178,7 @@ const JiraGenerator = () => {
 
             {!isEmpty(snapshots) && (
                 <div style={{marginTop: 20, padding: 20}}>
-                    <h3>Snapshots</h3>
+                    <h3>Snapshots:</h3>
                     {/* eslint-disable-next-line react/no-array-index-key */}
                     {snapshots.map((item, index) => <pre key={index} style={{marginBottom: '2em'}}>{item}</pre>)}
                 </div>
