@@ -1,6 +1,6 @@
 import {Input, InputNumber, Button, List, Divider, message, Checkbox} from 'antd';
 import {useCallback, useState, useMemo} from 'react';
-import {cloneDeep, partial} from 'lodash';
+import {cloneDeep, isEmpty, partial} from 'lodash';
 // why unresolved
 // eslint-disable-next-line import/no-unresolved
 import {produce} from 'immer';
@@ -20,6 +20,7 @@ type Row = typeof templateRow;
 
 const JiraGenerator = () => {
     const [list, setList] = useState<Row[]>([cloneDeep(templateRow)]);
+    const [snapshots, setSnapshots] = useState<string[]>([]);
 
 
     const handleAdd = useCallback(
@@ -50,18 +51,27 @@ const JiraGenerator = () => {
         [list]
     );
 
-    const handleCopy = useCallback(
-        resultStr => {
+    const validateCurrentList = useCallback(
+        () => {
             const isValid = list.every(item => (item.summary && item.assignee && item.storyPoint));
             if (!isValid) {
                 message.error('Summary/Assignee/StoryPoints is required');
+            }
+            return isValid;
+        },
+        [list]
+    );
+
+    const handleCopy = useCallback(
+        resultStr => {
+            if (!validateCurrentList()) {
                 return;
             }
 
             copy(resultStr);
             message.success('Copied');
         },
-        [list]
+        [validateCurrentList]
     );
 
     const handleInputEvent = useCallback(
@@ -87,6 +97,17 @@ const JiraGenerator = () => {
             return str;
         },
         [list]
+    );
+
+    const handleSnapshotClick = useCallback(
+        () => {
+            if (!validateCurrentList()) {
+                return;
+            }
+
+            setSnapshots(prev => [...prev, resultStr]);
+        },
+        [resultStr, validateCurrentList]
     );
 
     return (
@@ -152,7 +173,16 @@ const JiraGenerator = () => {
                 <h2>Result:</h2>
                 <pre>{resultStr}</pre>
                 <Button style={{marginLeft: 30}} onClick={partial(handleCopy, resultStr)} type="primary">Copy</Button>
+                <Button onClick={handleSnapshotClick} style={{marginLeft: 30}}>Snapshop</Button>
             </div>
+
+            {!isEmpty(snapshots) && (
+                <div style={{marginTop: 20, padding: 20}}>
+                    <h3>Snapshots</h3>
+                    {/* eslint-disable-next-line react/no-array-index-key */}
+                    {snapshots.map((item, index) => <pre key={index} style={{marginBottom: '2em'}}>{item}</pre>)}
+                </div>
+            )}
         </div>
     );
 };
