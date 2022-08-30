@@ -173,7 +173,7 @@ const JiraGenerator = () => {
                 <h2>Result:</h2>
                 <pre>{resultStr}</pre>
                 <Button style={{marginLeft: 30}} onClick={partial(handleCopy, resultStr)} type="primary">Copy</Button>
-                <Button onClick={handleSnapshotClick} style={{marginLeft: 30}}>Snapshop</Button>
+                <Button onClick={handleSnapshotClick} style={{marginLeft: 30}}>Snapshot</Button>
             </div>
 
             {!isEmpty(snapshots) && (
