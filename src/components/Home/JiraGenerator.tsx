@@ -1,6 +1,7 @@
-import {Input, InputNumber, Button, List, Divider, message, Checkbox} from 'antd';
+import {Input, InputNumber, Button, List, Divider, message, Checkbox, AutoComplete} from 'antd';
 import {useCallback, useState, useMemo} from 'react';
-import {cloneDeep, isEmpty, partial} from 'lodash';
+import {cloneDeep, concat, isEmpty, partial, uniq} from 'lodash';
+import {useLocalStorageState} from 'ahooks';
 // why unresolved
 // eslint-disable-next-line import/no-unresolved
 import {produce} from 'immer';
@@ -18,10 +19,55 @@ const templateRow = {
 
 type Row = typeof templateRow;
 
+interface UseHistoryAssignees {
+    (): {
+        historyAssignees: string[];
+        setHistoryAssignees: any;
+        getHistoryAssigneeOptions: (query: string) => any[];
+    }
+}
+
+const HISTORY_ASSIGNEES_KEY = 'jiraGeneratorHistoryAssignees';
+
+const useHistoryAssignees: UseHistoryAssignees = () => {
+    const [historyStorage, setHistoryStorage] = useLocalStorageState<string[]>(HISTORY_ASSIGNEES_KEY, {
+        defaultValue: [],
+        serializer: values => JSON.stringify(values),
+        deserializer: value => JSON.parse(value),
+    });
+
+    const getHistoryAssigneeOptions = useCallback(
+        query => {
+            return historyStorage.filter(item => {
+                if (!query) {
+                    return true;
+                }
+                return String(item).includes(query);
+            }).map(item => ({value: item}));
+        },
+        [historyStorage]
+    );
+
+    const setHistoryAssignees = useCallback(
+        (values: string[]) => {
+            const result = uniq(concat(values, historyStorage));
+            setHistoryStorage(result);
+        },
+        [historyStorage, setHistoryStorage]
+    );
+
+    return {
+        historyAssignees: historyStorage,
+        setHistoryAssignees,
+        getHistoryAssigneeOptions,
+    };
+};
+
 const JiraGenerator = () => {
     const [list, setList] = useState<Row[]>([cloneDeep(templateRow)]);
     const [snapshots, setSnapshots] = useState<string[]>([]);
 
+    const {setHistoryAssignees, getHistoryAssigneeOptions} = useHistoryAssignees();
 
     const handleAdd = useCallback(
         () => {
@@ -70,8 +116,11 @@ const JiraGenerator = () => {
 
             copy(resultStr);
             message.success('Copied');
+
+            const assignees = list.map(item => item.assignee);
+            setHistoryAssignees(assignees);
         },
-        [validateCurrentList]
+        [list, setHistoryAssignees, validateCurrentList]
     );
 
     const handleInputEvent = useCallback(
@@ -138,10 +187,16 @@ const JiraGenerator = () => {
                             </div>
                             <div>
                                 {'Assignee:'}
-                                <Input
+                                {/* <Input
                                     value={item.assignee}
                                     onChange={partial(handleInputEvent, index, 'assignee')}
                                     style={{display: 'inline-block', width: '200px'}}
+                                /> */}
+                                <AutoComplete
+                                    value={item.assignee}
+                                    onChange={partial(handleRowChange, index, 'assignee')}
+                                    style={{width: 200}}
+                                    options={getHistoryAssigneeOptions(item.assignee)}
                                 />
                                 {'@shopee.com'}
                             </div>

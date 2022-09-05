@@ -5,7 +5,6 @@ import {store} from '@/store';
 import JiraGenerator from '@/components/Home/JiraGenerator';
 import {URL_PREFIX} from '@/constants';
 import {Home} from '..';
-import styles from './styles.less';
 
 const App = () => (
     <RecoilRoot>

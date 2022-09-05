@@ -95,6 +95,7 @@
   },
   "dependencies": {
     "@hot-loader/react-dom": "^16.14.0",
+    "ahooks": "^3.7.0",
     "antd": "^4.18.9",
     "axios": "^0.21.1",
     "classnames": "^2.2.5",
