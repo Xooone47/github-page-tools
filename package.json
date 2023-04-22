@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "To build a react app quickly",
   "scripts": {
-    "start": "webpack-dev-server --mode development",
+    "start": "cross-env webpack-dev-server --mode development",
     "clean": "rm -rf build/",
     "build": "sh ./scripts/build.sh",
     "test": "jest --config ./configs/jest.config.js",
@@ -55,6 +55,7 @@
     "babel-plugin-react-require": "^3.0.0",
     "babel-plugin-react-transform": "^3.0.0",
     "cookie-parser": "^1.4.3",
+    "cross-env": "^7.0.3",
     "css-hot-loader": "^1.4.4",
     "css-loader": "^5.2.6",
     "enzyme": "^3.9.0",

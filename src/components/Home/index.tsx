@@ -14,6 +14,9 @@ const Home: FC = () => {
             <Link to={'/jira-generator'}>
                 Jira Generator
             </Link>
+            <Link to={'/coffee-snapshot'}>
+                Coffee Snapshot
+            </Link>
         </div>
     );
 };

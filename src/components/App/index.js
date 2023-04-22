@@ -3,6 +3,7 @@ import {Provider} from 'react-redux';
 import {RecoilRoot} from 'recoil';
 import {store} from '@/store';
 import JiraGenerator from '@/components/Home/JiraGenerator';
+import CoffeeSnapshot from '@/components/CoffeeSnapshot';
 import {URL_PREFIX} from '@/constants';
 import {Home} from '..';
 
@@ -16,6 +17,7 @@ const App = () => (
                             <Switch>
                                 <Route path="/" exact component={Home} />
                                 <Route path="/jira-generator" exact component={JiraGenerator} />
+                                <Route path="/coffee-snapshot" exact component={CoffeeSnapshot} />
                                 <Redirect from="*" to="/" />
                             </Switch>
                         </HashRouter>
