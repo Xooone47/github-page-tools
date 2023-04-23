@@ -55,6 +55,8 @@ const texts = {
     ps: '\n（个人记录全凭喜好，若有偏差概不负责）',
 };
 
+const actionBtnStyle = {marginLeft: 30, marginTop: 15};
+
 const JiraGenerator = () => {
     const [snapshots, setSnapshots] = useState<string[]>([]);
     const [form] = Form.useForm();
@@ -162,16 +164,18 @@ const JiraGenerator = () => {
                     <InputNumber step={1} />
                 </Form.Item>
             </Form>
-            <div style={{marginTop: 50, padding: 20}}>
+            <div style={{marginTop: 20, padding: 20}}>
                 <Typography.Title level={4}>Preview</Typography.Title>
-                <pre>{formatText(preview)}</pre>
-                <Button style={{marginLeft: 30}} onClick={partial(handleCopy, 'title')} type="primary">
+                <pre style={{marginBottom: 0}}>{formatText(preview)}</pre>
+                <Button style={actionBtnStyle} onClick={partial(handleCopy, 'title')} type="primary">
                     Copy Title
                 </Button>
-                <Button style={{marginLeft: 30}} onClick={partial(handleCopy, 'content')} type="primary">
+                <Button style={actionBtnStyle} onClick={partial(handleCopy, 'content')} type="primary">
                     Copy Content
                 </Button>
-                <Button onClick={handleSnapshotClick} style={{marginLeft: 30}}>Snapshot</Button>
+                <Button style={actionBtnStyle} onClick={handleSnapshotClick}>
+                    Snapshot
+                </Button>
             </div>
 
             {!isEmpty(snapshots) && (
