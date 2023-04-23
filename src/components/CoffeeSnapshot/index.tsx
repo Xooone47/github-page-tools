@@ -4,7 +4,6 @@ import {isEmpty, partial} from 'lodash';
 import copy from 'copy-to-clipboard';
 // import styles from './index.less';
 
-
 const bakingOptions = [
     {label: '浅', value: '浅'},
     {label: '中浅', value: '中浅'},
@@ -43,19 +42,23 @@ const calcPriceOfUnit = (price: number, weight: number, brew: string) => {
     return `${result}元（${unit}g）`;
 };
 
+const formatText = (texts: string[]) => {
+    return (texts || []).join('\n');
+};
+
 const texts = {
     title: (title: string, brew: string) => `「${brew}」${title}`,
     preference: (preference: number) => `个人喜爱度：${preference}/10`,
     price: (price: number, weight: number, brew: string) => {
         return `价格：${price}元/${weight}g；单杯价：${calcPriceOfUnit(price, weight, brew)}`;
     },
-    ps: '\n（个人记录全凭喜好，如有偏差概不负责）',
+    ps: '\n（个人记录全凭喜好，若有偏差概不负责）',
 };
 
 const JiraGenerator = () => {
     const [snapshots, setSnapshots] = useState<string[]>([]);
     const [form] = Form.useForm();
-    const [preview, setPreview] = useState('');
+    const [preview, setPreview] = useState<string[]>([]);
 
     const {validateFields} = form;
 
@@ -91,30 +94,32 @@ const JiraGenerator = () => {
                 texts.ps,
             ];
 
-            setPreview(previewTexts.join('\n'));
+            setPreview(previewTexts);
         },
         []
     );
 
     const handleCopy = useCallback(
-        async resultStr => {
+        async (type: 'title' | 'content') => {
             try {
                 await validateFields();
-                copy(resultStr);
+
+                const target = type === 'title' ? preview.slice(0, 1) : preview?.slice(1);
+                copy(formatText(target));
                 message.success('Copied');
             } catch (e) {
                 // eslint-disable-next-line no-console
                 console.log(e);
             }
         },
-        [validateFields]
+        [validateFields, preview]
     );
 
     const handleSnapshotClick = useCallback(
         async () => {
             try {
                 await validateFields();
-                setSnapshots(prev => [preview, ...prev]);
+                setSnapshots(prev => [formatText(preview), ...prev]);
             } catch (e) {
                 // eslint-disable-next-line no-console
                 console.log(e);
@@ -159,8 +164,13 @@ const JiraGenerator = () => {
             </Form>
             <div style={{marginTop: 50, padding: 20}}>
                 <Typography.Title level={4}>Preview</Typography.Title>
-                <pre>{preview}</pre>
-                <Button style={{marginLeft: 30}} onClick={partial(handleCopy, preview)} type="primary">Copy</Button>
+                <pre>{formatText(preview)}</pre>
+                <Button style={{marginLeft: 30}} onClick={partial(handleCopy, 'title')} type="primary">
+                    Copy Title
+                </Button>
+                <Button style={{marginLeft: 30}} onClick={partial(handleCopy, 'content')} type="primary">
+                    Copy Content
+                </Button>
                 <Button onClick={handleSnapshotClick} style={{marginLeft: 30}}>Snapshot</Button>
             </div>
 
