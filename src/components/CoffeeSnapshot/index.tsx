@@ -5,7 +5,7 @@ import copy from 'copy-to-clipboard';
 // import styles from './index.less';
 
 
-const hongbeiOptions = [
+const bakingOptions = [
     {label: '浅', value: '浅'},
     {label: '中浅', value: '中浅'},
     {label: '中', value: '中'},
@@ -13,8 +13,7 @@ const hongbeiOptions = [
     {label: '深', value: '深'},
 ];
 
-const chuliOptions = [
-    // {label: '', value: ''},
+const handleOptions = [
     {label: '水洗', value: '水洗'},
     {label: '日晒', value: '日晒'},
     {label: '蜜处理', value: '蜜处理'},
@@ -22,33 +21,33 @@ const chuliOptions = [
     {label: '酒桶发酵', value: '酒桶发酵'},
 ];
 
-const chongpaoOptions = [
+const brewOptions = [
     {label: '手冲', value: '手冲'},
     {label: '冷萃', value: '冷萃'},
 ];
 
 const formInitialValues = {
     title: '',
-    hongbei: '中',
-    chuli: '水洗',
-    chongpao: '手冲',
-    kougan: '',
-    xiaidu: 5,
+    bakingDegree: '中',
+    handle: '水洗',
+    brew: '手冲',
+    taste: '',
+    preference: 5,
     price: undefined,
-    kezhong: undefined,
+    weight: undefined,
 };
 
-const calcPriceOfUnit = (price: number, kezhong: number, chongpao: string) => {
-    const unit = chongpao === '冷萃' ? 20 : 15;
-    const result = ((price / kezhong) * unit).toFixed(1);
+const calcPriceOfUnit = (price: number, weight: number, brew: string) => {
+    const unit = brew === '冷萃' ? 20 : 15;
+    const result = ((price / weight) * unit).toFixed(1);
     return `${result}元（${unit}g）`;
 };
 
 const texts = {
-    title: (title: string, chongpao: string) => `「${chongpao}」${title}`,
-    xiaidu: (xiaidu: number) => `个人喜爱度：${xiaidu}/10`,
-    price: (price: number, kezhong: number, chongpao: string) => {
-        return `价格：${price}元/${kezhong}g；单杯价：${calcPriceOfUnit(price, kezhong, chongpao)}`;
+    title: (title: string, brew: string) => `「${brew}」${title}`,
+    preference: (preference: number) => `个人喜爱度：${preference}/10`,
+    price: (price: number, weight: number, brew: string) => {
+        return `价格：${price}元/${weight}g；单杯价：${calcPriceOfUnit(price, weight, brew)}`;
     },
     ps: '\n（个人记录全凭喜好，如有偏差概不负责）',
 };
@@ -58,18 +57,20 @@ const JiraGenerator = () => {
     const [form] = Form.useForm();
     const [preview, setPreview] = useState('');
 
+    const {validateFields} = form;
+
 
     const onFormValuesChange = useCallback(
         (changedValues, allValues) => {
             const {
                 title,
-                hongbei,
-                chuli,
-                chongpao,
-                kougan,
-                xiaidu,
+                bakingDegree,
+                handle,
+                brew,
+                taste,
+                preference,
                 price,
-                kezhong,
+                weight,
             } = allValues;
 
             // 烘焙度：浅
@@ -80,13 +81,13 @@ const JiraGenerator = () => {
             // 价格：46元 / 100g；单杯价：6.9元（15g）
             // （个人记录全凭喜好，如有偏差概不负责）
             const previewTexts = [
-                texts.title(title, chongpao),
-                `烘焙度：${hongbei}`,
-                `处理方式：${chuli}`,
-                `冲泡：${chongpao}`,
-                `口感：${kougan}`,
-                texts.xiaidu(xiaidu),
-                texts.price(price || 0, kezhong || 0, chongpao),
+                texts.title(title, brew),
+                `烘焙度：${bakingDegree}`,
+                `处理方式：${handle}`,
+                `冲泡：${brew}`,
+                `口感：${taste}`,
+                texts.preference(preference),
+                texts.price(price || 0, weight || 0, brew),
                 texts.ps,
             ];
 
@@ -96,19 +97,30 @@ const JiraGenerator = () => {
     );
 
     const handleCopy = useCallback(
-        resultStr => {
-            copy(resultStr);
-            message.success('Copied');
-
+        async resultStr => {
+            try {
+                await validateFields();
+                copy(resultStr);
+                message.success('Copied');
+            } catch (e) {
+                // eslint-disable-next-line no-console
+                console.log(e);
+            }
         },
-        []
+        [validateFields]
     );
 
     const handleSnapshotClick = useCallback(
-        () => {
-            setSnapshots(prev => [preview, ...prev]);
+        async () => {
+            try {
+                await validateFields();
+                setSnapshots(prev => [preview, ...prev]);
+            } catch (e) {
+                // eslint-disable-next-line no-console
+                console.log(e);
+            }
         },
-        [preview]
+        [preview, validateFields]
     );
 
     return (
@@ -123,25 +135,25 @@ const JiraGenerator = () => {
                 <Form.Item name="title" label="标题" rules={[{required: true}]}>
                     <Input />
                 </Form.Item>
-                <Form.Item name="hongbei" label="烘焙度" rules={[{required: true}]}>
-                    <Radio.Group buttonStyle="solid" options={hongbeiOptions} />
+                <Form.Item name="bakingDegree" label="烘焙度" rules={[{required: true}]}>
+                    <Radio.Group buttonStyle="solid" options={bakingOptions} />
                 </Form.Item>
-                <Form.Item name="chuli" label="处理方式" rules={[{required: true}]}>
-                    <Radio.Group buttonStyle="solid" options={chuliOptions} />
+                <Form.Item name="handle" label="处理方式" rules={[{required: true}]}>
+                    <Radio.Group buttonStyle="solid" options={handleOptions} />
                 </Form.Item>
-                <Form.Item name="chongpao" label="冲泡" rules={[{required: true}]}>
-                    <Radio.Group buttonStyle="solid" options={chongpaoOptions} />
+                <Form.Item name="brew" label="冲泡" rules={[{required: true}]}>
+                    <Radio.Group buttonStyle="solid" options={brewOptions} />
                 </Form.Item>
-                <Form.Item name="kougan" label="口感" rules={[{required: true}]}>
+                <Form.Item name="taste" label="口感" rules={[{required: true}]}>
                     <Input />
                 </Form.Item>
-                <Form.Item name="xiaidu" label="个人喜爱度" rules={[{required: true}]}>
+                <Form.Item name="preference" label="个人喜爱度" rules={[{required: true}]}>
                     <InputNumber step={0.5} />
                 </Form.Item>
                 <Form.Item name="price" label="价格" rules={[{required: true}]}>
                     <InputNumber step={0.1} />
                 </Form.Item>
-                <Form.Item name="kezhong" label="克重" rules={[{required: true}]}>
+                <Form.Item name="weight" label="克重" rules={[{required: true}]}>
                     <InputNumber step={1} />
                 </Form.Item>
             </Form>
@@ -151,13 +163,6 @@ const JiraGenerator = () => {
                 <Button style={{marginLeft: 30}} onClick={partial(handleCopy, preview)} type="primary">Copy</Button>
                 <Button onClick={handleSnapshotClick} style={{marginLeft: 30}}>Snapshot</Button>
             </div>
-            {/*
-            <div style={{marginTop: 50, padding: 20}}>
-                <h2>Result:</h2>
-                <pre>{resultStr}</pre>
-                <Button style={{marginLeft: 30}} onClick={partial(handleCopy, resultStr)} type="primary">Copy</Button>
-                <Button onClick={handleSnapshotClick} style={{marginLeft: 30}}>Snapshot</Button>
-            </div> */}
 
             {!isEmpty(snapshots) && (
                 <div style={{marginTop: 20, padding: 20}}>
