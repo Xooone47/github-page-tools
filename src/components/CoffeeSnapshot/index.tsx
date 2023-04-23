@@ -1,4 +1,4 @@
-import {Form, Radio, Input, InputNumber, Button, Divider, message} from 'antd';
+import {Form, Radio, Input, InputNumber, Button, Divider, message, Typography} from 'antd';
 import {useCallback, useState} from 'react';
 import {isEmpty, partial} from 'lodash';
 import copy from 'copy-to-clipboard';
@@ -158,7 +158,7 @@ const JiraGenerator = () => {
                 </Form.Item>
             </Form>
             <div style={{marginTop: 50, padding: 20}}>
-                <div>Preview:</div>
+                <Typography.Title level={4}>Preview</Typography.Title>
                 <pre>{preview}</pre>
                 <Button style={{marginLeft: 30}} onClick={partial(handleCopy, preview)} type="primary">Copy</Button>
                 <Button onClick={handleSnapshotClick} style={{marginLeft: 30}}>Snapshot</Button>
@@ -166,7 +166,7 @@ const JiraGenerator = () => {
 
             {!isEmpty(snapshots) && (
                 <div style={{marginTop: 20, padding: 20}}>
-                    <h3>Snapshots:</h3>
+                    <Typography.Title level={4}>Snapshots:</Typography.Title>
                     {/* eslint-disable-next-line react/no-array-index-key */}
                     {snapshots.map((item, index) => <pre key={index} style={{marginBottom: '2em'}}>{item}</pre>)}
                 </div>
