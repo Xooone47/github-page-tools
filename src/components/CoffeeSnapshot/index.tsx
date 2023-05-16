@@ -93,7 +93,7 @@ const JiraGenerator = () => {
                 `口感：${taste}`,
                 texts.preference(preference),
                 texts.price(price || 0, weight || 0, brew),
-                texts.ps,
+                // texts.ps,
             ];
 
             setPreview(previewTexts);
